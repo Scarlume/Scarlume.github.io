@@ -39,7 +39,7 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx'],
     plugins: {
-        '@typescript-eslint': tseslint.plugin,
+      '@typescript-eslint': tseslint.plugin,
     },
     rules: {
       'no-unused-vars': 'off',
