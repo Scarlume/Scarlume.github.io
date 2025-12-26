@@ -5,34 +5,251 @@ const { frontmatter } = Astro.props;
 ---
 
 <BaseLayout pageTitle={frontmatter.title}>
-    <p>{frontmatter.pubDate.toString().slice(0,10)}</p>
-    <p><em>{frontmatter.description}</em></p>
-    <p>作者：{frontmatter.author}</p>
-    <img src={frontmatter.image.url} width="300" alt={frontmatter.image.alt} />
-    <slot />
-    <div class="tags">
-        {frontmatter.tags.map((tag: string) => (
-          <p class="tag"><a href={`/tags/${tag}`}>{tag}</a></p>
-        ))}
+  <article class="post-article">
+    <header class="post-header">
+      <div class="post-meta">
+        <time class="post-date">{new Date(frontmatter.pubDate).toLocaleDateString('zh-CN', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        })}</time>
+        {frontmatter.author && <span class="post-author">作者：{frontmatter.author}</span>}
+      </div>
+      
+      {frontmatter.description && (
+        <p class="post-description">{frontmatter.description}</p>
+      )}
+      
+      <!-- {frontmatter.image && (
+        <div class="post-image">
+          <img src={frontmatter.image.url} alt={frontmatter.image.alt} />
+        </div>
+      )} -->
+    </header>
+    
+    <div class="post-content">
+      <slot />
     </div>
+    
+    {frontmatter.tags && frontmatter.tags.length > 0 && (
+      <footer class="post-footer">
+        <div class="tags">
+          <span class="tags-label">标签：</span>
+          {frontmatter.tags.map((tag: string) => (
+            <a href={`/tags/${tag}`} class="tag">{tag}</a>
+          ))}
+        </div>
+      </footer>
+    )}
+  </article>
 </BaseLayout>
 
 <style>
-    a {
-      color: #00539F;
-    }
+  .post-article {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
   
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-    }
+  .post-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
   
-    .tag {
-      margin: 0.25em;
-      border: dotted 1px #a1a1a1;
-      border-radius: .5em;
-      padding: .5em 1em;
-      font-size: 1.15em;
-      background-color: #F8FCFD;
-    }
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .post-date {
+    color: #6b7280;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  .post-author {
+    color: #9ca3af;
+    font-size: 0.9rem;
+  }
+  
+  .post-description {
+    font-size: 1.1rem;
+    color: #6b7280;
+    font-style: italic;
+    margin: 1rem 0;
+    line-height: 1.6;
+  }
+  
+  .post-image {
+    margin: 2rem 0;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .post-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    position: relative;
+    z-index: 1;
+    display: block;
+    margin: 0 auto;
+  }
+  
+  .post-content {
+    line-height: 1.8;
+    font-size: 1.05rem;
+    position: relative;
+    z-index: 1;
+    clear: both;
+  }
+  
+  .post-content :global(h2) {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  
+  .post-content :global(h3) {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .post-content :global(p) {
+    margin: 1.5rem 0;
+    color: #374151;
+  }
+  
+  .post-content :global(blockquote) {
+    border-left: 4px solid #4f46e5;
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    color: #6b7280;
+    background: #f8fafc;
+    padding: 1rem 1.5rem;
+    border-radius: 0 8px 8px 0;
+  }
+  
+  .post-content :global(code) {
+    background: #f1f5f9;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #e11d48;
+  }
+  
+  .post-content :global(pre) {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 2rem 0;
+  }
+  
+  .post-content :global(pre code) {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+  
+  .post-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .tags {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  
+  .tags-label {
+    color: #6b7280;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .tag {
+    background: #f3f4f6;
+    color: #374151;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .tag:hover {
+    background: #4f46e5;
+    color: white;
+    transform: translateY(-1px);
+  }
+  
+  /* 暗色主题 */
+  :global(html.dark) .post-header {
+    border-bottom-color: #374151;
+  }
+  
+  :global(html.dark) .post-date,
+  :global(html.dark) .post-description {
+    color: #cbd5e1;
+  }
+  
+  :global(html.dark) .post-author {
+    color: #9ca3af;
+  }
+  
+  :global(html.dark) .post-content :global(h2) {
+    border-bottom-color: #374151;
+  }
+  
+  :global(html.dark) .post-content :global(p) {
+    color: #cbd5e1;
+  }
+  
+  :global(html.dark) .post-content :global(blockquote) {
+    background: #1e293b;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    border-left: 4px solid #6366f1;
+  }
+  
+  :global(html.dark) .post-content :global(code) {
+    background: #374151;
+    color: #f472b6;
+  }
+  
+  :global(html.dark) .post-footer {
+    border-top-color: #374151;
+  }
+  
+  :global(html.dark) .tags-label {
+    color: #cbd5e1;
+  }
+  
+  :global(html.dark) .tag {
+    background: #475569;
+    color: #e2e8f0;
+  }
+  
+  :global(html.dark) .tag:hover {
+    background: #6366f1;
+    color: white;
+  }
 </style>

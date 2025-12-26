@@ -1,10 +1,101 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Greeting from '../components/Greeting';
+import Greeting from '../components/Greeting.jsx';
 
-const pageTitle = "首页";
+const pageTitle = "欢迎来到我的博客";
 ---
 <BaseLayout pageTitle={pageTitle}>
-  <h2>我超棒的博客副标题</h2>
-  <Greeting client:load messages={["Hej", "Hallo", "Hola", "Habari"]} />
+  <div class="hero-section">
+    <h2 class="subtitle">分享技术，记录生活</h2>
+    <p class="description">
+      这里是我的个人博客，记录我在技术路上的思考与成长，分享有趣的发现和深度的见解。
+    </p>
+    <Greeting client:load messages={["你好", "Hello", "Hola", "Bonjour"]} />
+  </div>
+  
+  <div class="features">
+    <div class="feature-card">
+      <h3>技术分享</h3>
+      <p>分享前端开发、编程技巧和最新技术趋势</p>
+    </div>
+    <div class="feature-card">
+      <h3>生活记录</h3>
+      <p>记录日常生活中的思考和感悟</p>
+    </div>
+    <div class="feature-card">
+      <h3>持续学习</h3>
+      <p>保持好奇心，不断探索新的知识领域</p>
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  .hero-section {
+    text-align: center;
+    margin: 2rem 0 4rem 0;
+  }
+  
+  .subtitle {
+    font-size: 1.5rem;
+    color: #6b7280;
+    font-weight: 400;
+    margin: 0 0 1.5rem 0;
+  }
+  
+  .description {
+    font-size: 1.1rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    line-height: 1.7;
+  }
+  
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+  
+  .feature-card {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .feature-card h3 {
+    color: #1a1a1a;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .feature-card p {
+    color: #6b7280;
+    margin: 0;
+  }
+  
+  :global(html.dark) .subtitle,
+  :global(html.dark) .description {
+    color: #cbd5e1;
+  }
+  
+  :global(html.dark) .feature-card {
+    background: #475569;
+    border-color: #64748b;
+  }
+  
+  :global(html.dark) .feature-card h3 {
+    color: #f1f5f9;
+  }
+  
+  :global(html.dark) .feature-card p {
+    color: #cbd5e1;
+  }
+</style>

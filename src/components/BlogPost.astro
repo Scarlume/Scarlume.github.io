@@ -1,4 +1,112 @@
 ---
-const { title, url } = Astro.props;
+const { title, url, description, pubDate, tags } = Astro.props;
 ---
-<li><a href={url}>{title}</a></li>
+<article class="blog-post-card">
+  <div class="post-content">
+    <h3 class="post-title">
+      <a href={url}>{title}</a>
+    </h3>
+    {description && <p class="post-description">{description}</p>}
+    <div class="post-meta">
+      {pubDate && <time class="post-date">{new Date(pubDate).toLocaleDateString('zh-CN')}</time>}
+      {tags && tags.length > 0 && (
+        <div class="post-tags">
+          {tags.map((tag: string) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</article>
+
+<style>
+  .blog-post-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+  }
+  
+  .blog-post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .post-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .post-title a {
+    color: #1a1a1a;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .post-title a:hover {
+    color: #4f46e5;
+  }
+  
+  .post-description {
+    color: #6b7280;
+    margin: 0 0 1rem 0;
+    line-height: 1.6;
+  }
+  
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .post-date {
+    color: #9ca3af;
+    font-size: 0.875rem;
+  }
+  
+  .post-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .tag {
+    background: #f3f4f6;
+    color: #374151;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  :global(html.dark) .blog-post-card {
+    background: #475569;
+    border-color: #64748b;
+  }
+  
+  :global(html.dark) .post-title a {
+    color: #f1f5f9;
+  }
+  
+  :global(html.dark) .post-title a:hover {
+    color: #6366f1;
+  }
+  
+  :global(html.dark) .post-description {
+    color: #cbd5e1;
+  }
+  
+  :global(html.dark) .post-date {
+    color: #9ca3af;
+  }
+  
+  :global(html.dark) .tag {
+    background: #64748b;
+    color: #e2e8f0;
+  }
+</style>

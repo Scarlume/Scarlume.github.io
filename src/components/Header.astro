@@ -4,18 +4,53 @@ import Menu from './Menu.astro';
 import ThemeIcon from './ThemeIcon.astro';
 ---
 <header>
- <nav>
-  <div>
-    <ThemeIcon />
-    <Menu />
+  <div class="container">
+    <nav>
+      <div class="nav-container">
+        <div class="logo">
+          <a href="/">Scarlume</a>
+        </div>
+        <div class="nav-controls">
+          <ThemeIcon />
+          <Menu />
+        </div>
+      </div>
+      <Navigation />
+    </nav>
   </div>
-  <Navigation />
- </nav>
 </header>
 
 <style>
-  div {
+  .nav-container {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
   }
- </style>
+  
+  .logo a {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .logo a:hover {
+    color: #4f46e5;
+  }
+  
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  :global(html.dark) .logo a {
+    color: #f1f5f9;
+  }
+  
+  :global(html.dark) .logo a:hover {
+    color: #6366f1;
+  }
+</style>

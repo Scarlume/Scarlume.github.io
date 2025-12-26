@@ -2,61 +2,202 @@
 import '../styles/global.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const pageTitle = "关于我2";
-
-const identity = {
-  firstName: "莎拉",
-  country: "加拿大",
-  occupation: "技术撰稿人",
-  hobbies: ["摄影", "观鸟", "棒球"],
-};
-
-const skills = ["HTML", "CSS", "JavaScript", "React", "Astro", "Writing Docs"];
-
-const happy = true;
-const finished = true;
-const goal = 3;
-const skillColor = "crimson";
-const fontWeight = "bold";
-const textCase = "uppercase";
-
+const pageTitle = "关于我";
 ---
 
 <BaseLayout pageTitle={pageTitle}>
-    <style define:vars={{skillColor, fontWeight, textCase}}>
-        h1 {
-            color: purple;
-            font-size: 4rem;
-        }
-        .skill {
-            color: var(--skillColor);
-            font-weight: var(--fontWeight);
-            text-transform: var(--textCase);
-        }
-    </style>
-    <h1>我的 Astro 网站</h1>
-    <h1>关于我</h1>
-    <h2>……和我的新 Astro 网站！</h2>
+  <div class="about-content">
+    <div class="intro-section">
+      <div class="avatar-placeholder">
+        <div class="avatar-icon">👋</div>
+      </div>
+      <h2>你好，我是 Scarlume</h2>
+      <p class="intro-text">
+        一个热爱技术、喜欢分享的开发者。我相信技术能够改变世界，也相信分享能够让知识传播得更远。
+      </p>
+    </div>
 
-    <p>我正在学习 Astro 的入门教程。这是我网站上的第二个页面，也是我自己建立的第一页面！</p>
+    <div class="details-grid">
+      <div class="detail-card">
+        <h3>🚀 技术栈</h3>
+        <div class="skills">
+          <span class="skill">JavaScript</span>
+          <span class="skill">TypeScript</span>
+          <span class="skill">React</span>
+          <span class="skill">Vue</span>
+          <span class="skill">Astro</span>
+          <span class="skill">Node.js</span>
+        </div>
+      </div>
 
-    <p>随着我完成更多教程，该站点将更新，所以请继续查看我的旅程将如何进行吧！</p>
-    <p>以下是关于我的几个事实：</p>
-    <ul>
-        <li>我的名字是{identity.firstName}.</li>
-        <li>我住在{identity.country}。我的职业是{identity.occupation}。</li>
-        {identity.hobbies.length >= 2 &&
-            <li>我的两个习惯：{identity.hobbies[0]}和{identity.hobbies[1]}</li>
-        }
+      <div class="detail-card">
+        <h3>💡 兴趣爱好</h3>
+        <ul class="hobbies">
+          <li>前端开发</li>
+          <li>开源项目</li>
+          <li>技术写作</li>
+          <li>摄影</li>
         </ul>
-        <p>我的技能是：</p>
-        <ul>
-        {skills.map((skill) => <li class="skill">{skill}</li>)}
-    </ul>
+      </div>
 
-    {happy && <p>我非常乐意学习 Astro！</p>}
+      <div class="detail-card">
+        <h3>📝 博客理念</h3>
+        <p>
+          记录学习过程中的思考和总结，分享有价值的技术见解，
+          希望能够帮助到更多的开发者朋友。
+        </p>
+      </div>
 
-    {finished && <p>我完成了这节教程！</p>}
-
-    {goal === 3 ? <p>我的目标是在三天内完成。</p> : <p>我的目标不是 3 天。</p>}
+      <div class="detail-card">
+        <h3>📫 联系方式</h3>
+        <p>
+          如果你对我的文章有任何疑问或建议，欢迎通过邮件或社交媒体与我交流。
+        </p>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  .about-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .intro-section {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  
+  .avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem auto;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .avatar-icon {
+    font-size: 3rem;
+  }
+  
+  .intro-section h2 {
+    font-size: 2rem;
+    margin: 0 0 1rem 0;
+    color: #1a1a1a;
+  }
+  
+  .intro-text {
+    font-size: 1.1rem;
+    color: #6b7280;
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  .detail-card {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .detail-card h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #1a1a1a;
+    font-size: 1.25rem;
+  }
+  
+  .skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .skill {
+    background: #4f46e5;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .hobbies {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .hobbies li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    color: #4a5568;
+  }
+  
+  .hobbies li:last-child {
+    border-bottom: none;
+  }
+  
+  .detail-card p {
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+  }
+  
+  :global(html.dark) .intro-section h2 {
+    color: #f1f5f9;
+  }
+  
+  :global(html.dark) .intro-text {
+    color: #cbd5e1;
+  }
+  
+  :global(html.dark) .detail-card {
+    background: #475569;
+    border-color: #64748b;
+  }
+  
+  :global(html.dark) .detail-card h3 {
+    color: #f1f5f9;
+  }
+  
+  :global(html.dark) .detail-card p {
+    color: #cbd5e1;
+  }
+  
+  :global(html.dark) .hobbies li {
+    color: #cbd5e1;
+    border-bottom-color: #64748b;
+  }
+  
+  :global(html.dark) .skill {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 768px) {
+    .details-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .avatar-placeholder {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .avatar-icon {
+      font-size: 2.5rem;
+    }
+  }
+</style>
