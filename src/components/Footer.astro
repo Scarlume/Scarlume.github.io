@@ -3,15 +3,60 @@ import Social from './Social.astro';
 ---
 
 <footer>
-    <Social platform="twitter" username="astrodotbuild" />
-    <Social platform="github" username="withastro" />
-    <Social platform="youtube" username="astrodotbuild" />
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-info">
+        <p>&copy; 2024 Scarlume. 用心记录，分享美好。</p>
+      </div>
+      <div class="social-links">
+        <Social platform="twitter" username="astrodotbuild" />
+        <Social platform="github" username="withastro" />
+        <Social platform="youtube" username="astrodotbuild" />
+      </div>
+    </div>
+  </div>
 </footer>
 
 <style>
-    footer {
-      display: flex;
-      gap: 1rem;
-      margin-top: 2rem;
+  footer {
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 4rem;
+    padding: 2rem 0;
+  }
+  
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .footer-info p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+  
+  .social-links {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  :global(html.dark) footer {
+    background: #1e293b;
+    border-top-color: #334155;
+  }
+  
+  :global(html.dark) .footer-info p {
+    color: #9ca3af;
+  }
+  
+  @media (max-width: 768px) {
+    .footer-content {
+      flex-direction: column;
+      text-align: center;
     }
+  }
 </style>
