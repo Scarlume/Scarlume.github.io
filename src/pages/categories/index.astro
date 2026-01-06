@@ -1,111 +1,40 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getAllPosts, buildCategoryTree, getPostsByCategory,type CategoryNode } from '../../utils/posts';
-
+import CategoryNodeView from '../../components/CategoryNodeView';
+import * as PostUtils from '../../utils/posts';
 
 const pageTitle = "类别";
-const allPosts = getAllPosts();
-const categoryTree = buildCategoryTree(allPosts);
+const allPosts = PostUtils.getAllPosts();
+const categoryTree = PostUtils.buildCategoryTree(allPosts as any);
 
 // 计算每个类别的文章数量
 const categoryCounts: { [key: string]: number } = {};
-function calculateCounts(tree: { [key: string]: CategoryNode }, prefix = '') {
+function calculateCounts(tree: any, prefix = '') {
   Object.keys(tree).forEach(key => {
     const fullPath = prefix ? `${prefix}/${key}` : key;
-    categoryCounts[fullPath] = getPostsByCategory(allPosts, fullPath).length;
+    // @ts-ignore
+    const postsInCategory = PostUtils.getPostsByCategory(allPosts, fullPath);
+    categoryCounts[fullPath] = postsInCategory.length;
     
-    if (Object.keys(tree[key].children).length > 0) {
+    if (tree[key].children && Object.keys(tree[key].children).length > 0) {
       calculateCounts(tree[key].children, fullPath);
     }
   });
 }
 calculateCounts(categoryTree);
-
-// 计算总文章数
-const totalPosts = allPosts.length;
 ---
 
 <BaseLayout pageTitle={pageTitle}>
   <div class="categories-container">
     <div class="categories-tree">
       {Object.keys(categoryTree).map(categoryName => (
-        <div class="category-group">
-          {/* 主类别 */}
-          <div class="category-item main-category" data-category={categoryName}>
-            <div class="category-header">
-              {Object.keys(categoryTree[categoryName].children).length > 0 && (
-                <button class="expand-btn" aria-label="展开/收起">
-                  <svg class="expand-icon" width="12" height="12" viewBox="0 0 16 16">
-                    <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none"/>
-                  </svg>
-                </button>
-              )}
-              <a href={`/categories/${encodeURIComponent(categoryName)}`} class="category-link">
-                {categoryName}
-              </a>
-              <span class="post-count">{categoryCounts[categoryName] || 0}</span>
-            </div>
-          </div>
-          
-          {/* 子类别和文章 */}
-          {Object.keys(categoryTree[categoryName].children).length > 0 && (
-            <div class="subcategories" data-parent={categoryName}>
-              {Object.keys(categoryTree[categoryName].children).map(subCategoryName => {
-                const fullPath = `${categoryName}/${subCategoryName}`;
-                const subCategory = categoryTree[categoryName].children[subCategoryName];
-                
-                return (
-                  <div class="subcategory-group">
-                    {/* 子类别标题 */}
-                    <div class="category-item sub-category">
-                      <div class="category-header">
-                        {subCategory.posts.length > 0 && (
-                          <button class="expand-btn sub-expand-btn" aria-label="展开/收起">
-                            <svg class="expand-icon" width="10" height="10" viewBox="0 0 16 16">
-                              <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none"/>
-                            </svg>
-                          </button>
-                        )}
-                        <a href={`/categories/${encodeURIComponent(fullPath)}`} class="category-link">
-                          {subCategoryName}
-                        </a>
-                        <span class="post-count">{subCategory.posts.length}</span>
-                      </div>
-                    </div>
-                    
-                    {/* 文章列表 */}
-                    {subCategory.posts.length > 0 && (
-                      <div class="posts-list">
-                        {subCategory.posts.map(post => (
-                          <div class="post-item">
-                            <a href={post.url} class="post-link">
-                              <span class="post-number">01:</span>
-                              <span class="post-title">{post.frontmatter.title}</span>
-                            </a>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-          
-          {/* 主类别下的直接文章 */}
-          {categoryTree[categoryName].posts && categoryTree[categoryName].posts.length > 0 && (
-            <div class="posts-list main-posts">
-              {categoryTree[categoryName].posts.map((post, index) => (
-                <div class="post-item">
-                  <a href={post.url} class="post-link">
-                    <span class="post-number">{String(index + 1).padStart(2, '0')}:</span>
-                    <span class="post-title">{post.frontmatter.title}</span>
-                  </a>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <CategoryNodeView 
+          categoryName={categoryName}
+          categoryNode={categoryTree[categoryName] as any}
+          categoryCounts={categoryCounts}
+          level={0}
+          client:load
+        />
       ))}
     </div>
   </div>
@@ -116,44 +45,6 @@ const totalPosts = allPosts.length;
     </div>
   )}
 </BaseLayout>
-
-<script>
-  // 添加展开/收起功能
-  document.addEventListener('DOMContentLoaded', () => {
-    const expandBtns = document.querySelectorAll('.expand-btn');
-    
-    expandBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const categoryGroup = btn.closest('.category-group, .subcategory-group');
-        const subcategories = categoryGroup?.querySelector('.subcategories, .posts-list');
-        const icon = btn.querySelector('.expand-icon') as HTMLElement;
-        
-        if (subcategories && icon) {
-          const isExpanded = subcategories.classList.contains('expanded');
-          
-          if (isExpanded) {
-            subcategories.classList.remove('expanded');
-            icon.style.transform = 'rotate(0deg)';
-          } else {
-            subcategories.classList.add('expanded');
-            icon.style.transform = 'rotate(90deg)';
-          }
-        }
-      });
-    });
-    
-    // 默认展开所有分类
-    document.querySelectorAll('.subcategories, .posts-list').forEach(sub => {
-      sub.classList.add('expanded');
-    });
-    document.querySelectorAll('.expand-icon').forEach(icon => {
-      (icon as HTMLElement).style.transform = 'rotate(90deg)';
-    });
-  });
-</script>
 
 <style>
   .categories-container {
@@ -167,152 +58,6 @@ const totalPosts = allPosts.length;
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   }
   
-  .category-group {
-    margin-bottom: 2rem;
-  }
-  
-  .category-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0;
-    cursor: pointer;
-  }
-  
-  .expand-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.25rem;
-    color: #9ca3af;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-  }
-  
-  .expand-btn:hover {
-    color: #60a5fa;
-  }
-  
-  .expand-icon {
-    transition: transform 0.2s ease;
-  }
-  
-  .main-category .category-link {
-    color: #f1f5f9;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1.1rem;
-    transition: color 0.2s ease;
-  }
-  
-  .main-category .category-link:hover {
-    color: #60a5fa;
-  }
-  
-  .sub-category .category-link {
-    color: #cbd5e1;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1rem;
-    transition: color 0.2s ease;
-    margin-left: 1rem;
-  }
-  
-  .sub-category .category-link:hover {
-    color: #60a5fa;
-  }
-  
-  .post-count {
-    background: #374151;
-    color: #9ca3af;
-    padding: 0.125rem 0.5rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    min-width: 1.5rem;
-    text-align: center;
-    margin-left: auto;
-  }
-  
-  .main-category .post-count {
-    background: #60a5fa;
-    color: #1e293b;
-  }
-  
-  .subcategories {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    margin-left: 1rem;
-  }
-  
-  .subcategories.expanded {
-    max-height: 2000px;
-  }
-  
-  .subcategory-group {
-    margin: 0.5rem 0;
-  }
-  
-  .sub-expand-btn {
-    margin-left: 1rem;
-  }
-  
-  .posts-list {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    margin-left: 2rem;
-    margin-top: 0.5rem;
-  }
-  
-  .posts-list.expanded {
-    max-height: 1000px;
-  }
-  
-  .main-posts {
-    margin-left: 1rem;
-  }
-  
-  .post-item {
-    margin: 0.25rem 0;
-  }
-  
-  .post-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    padding: 0.25rem 0;
-    transition: all 0.2s ease;
-    border-radius: 4px;
-  }
-  
-  .post-link:hover {
-    background: rgba(96, 165, 250, 0.1);
-    padding-left: 0.5rem;
-  }
-  
-  .post-number {
-    color: #60a5fa;
-    font-weight: 600;
-    font-size: 0.9rem;
-    min-width: 2rem;
-  }
-  
-  .post-title {
-    color: #e2e8f0;
-    font-weight: 400;
-    font-size: 0.95rem;
-  }
-  
-  .post-link:hover .post-title {
-    color: #f1f5f9;
-  }
-  
   .empty-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -323,52 +68,10 @@ const totalPosts = allPosts.length;
     .categories-container {
       padding: 1rem 0.5rem;
     }
-    
-    .category-link {
-      font-size: 0.9rem !important;
-    }
-    
-    .post-title {
-      font-size: 0.85rem;
-    }
-    
-    .posts-list {
-      margin-left: 1rem;
-    }
-    
-    .main-posts {
-      margin-left: 0.5rem;
-    }
   }
   
   /* Dark mode is default, but add light mode overrides if needed */
   :global(html:not(.dark)) .categories-tree {
     color: #1f2937;
-  }
-  
-  :global(html:not(.dark)) .main-category .category-link {
-    color: #1f2937;
-  }
-  
-  :global(html:not(.dark)) .sub-category .category-link {
-    color: #4b5563;
-  }
-  
-  :global(html:not(.dark)) .post-title {
-    color: #374151;
-  }
-  
-  :global(html:not(.dark)) .post-link:hover .post-title {
-    color: #1f2937;
-  }
-  
-  :global(html:not(.dark)) .post-count {
-    background: #f3f4f6;
-    color: #6b7280;
-  }
-  
-  :global(html:not(.dark)) .main-category .post-count {
-    background: #3b82f6;
-    color: white;
   }
 </style>
