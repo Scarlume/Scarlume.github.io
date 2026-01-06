@@ -87,7 +87,6 @@
   margin-left: 1rem;
 }
 
-
 .postsList {
   max-height: 2000px;
   overflow: hidden;
@@ -95,7 +94,6 @@
   margin-left: 2rem;
   margin-top: 0.5rem;
 }
-
 
 .mainPosts {
   margin-left: 1rem;
@@ -181,29 +179,29 @@
   .categoryLink {
     font-size: 0.9rem !important;
   }
-  
+
   .postTitle {
     font-size: 0.85rem;
   }
-  
+
   .subcategories {
     margin-left: 0.5rem;
   }
-  
+
   .postsList {
     margin-left: 1rem;
   }
-  
+
   .mainPosts {
     margin-left: 0.5rem;
   }
-  
+
   .level1 .subcategories,
   .level2 .subcategories,
   .level3 .subcategories {
     margin-left: 0.75rem;
   }
-  
+
   .level1 .postsList,
   .level2 .postsList,
   .level3 .postsList {

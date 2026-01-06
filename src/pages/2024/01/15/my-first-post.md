@@ -5,9 +5,9 @@ pubDate: 2024-01-15
 description: '这是我使用新博客系统发布的第一篇技术文章，介绍了前端开发的一些心得。'
 author: 'Scarlume'
 categories:
-  - "技术"
-  - "前端"
-  - "React"
+  - '技术'
+  - '前端'
+  - 'React'
 tags: ['react', 'javascript', 'frontend']
 slug: 'my-first-post'
 image:

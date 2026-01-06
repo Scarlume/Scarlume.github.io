@@ -5,9 +5,9 @@ pubDate: 2024-02-10
 description: '详细介绍如何使用 Astro 框架搭建一个高性能的静态博客系统，包括架构设计和最佳实践。'
 author: 'Scarlume'
 categories:
-  - "技术"
-  - "前端"
-  - "Astro"
+  - '技术'
+  - '前端'
+  - 'Astro'
 tags: ['astro', 'blog', 'static-site', 'performance']
 slug: 'astro-blog-setup'
 ---
@@ -21,16 +21,19 @@ slug: 'astro-blog-setup'
 Astro 是一个现代的静态站点生成器，具有以下优势：
 
 ### 1. 性能优先
+
 - 默认零 JavaScript 运行时
 - 组件岛屿架构
 - 优秀的 Core Web Vitals 表现
 
 ### 2. 开发体验
+
 - 支持多种前端框架
 - 热重载和快速构建
 - TypeScript 原生支持
 
 ### 3. SEO 友好
+
 - 静态生成的 HTML
 - 完整的元数据支持
 - 优秀的搜索引擎优化
@@ -51,6 +54,7 @@ src/
 ### URL 结构设计
 
 采用类似 Hexo 的 URL 结构：
+
 - 文章：`/year/month/day/slug`
 - 归档：`/archive`
 - 类别：`/categories/category-name`
@@ -59,16 +63,19 @@ src/
 ## 核心功能实现
 
 ### 1. 文章管理
+
 - Markdown 文件存储
 - Frontmatter 元数据
 - 自动路由生成
 
 ### 2. 分类系统
+
 - 支持多级分类
 - 递归类别结构
 - 动态类别页面
 
 ### 3. 标签系统
+
 - 灵活的标签管理
 - 标签聚合页面
 - 相关文章推荐
@@ -76,12 +83,15 @@ src/
 ## 性能优化
 
 ### 1. 静态生成
+
 所有页面在构建时预渲染，确保最佳的加载性能。
 
 ### 2. 组件岛屿
+
 只有需要交互的组件才会加载 JavaScript。
 
 ### 3. 资源优化
+
 - 图片优化和懒加载
 - CSS 和 JavaScript 压缩
 - 字体优化
@@ -89,6 +99,7 @@ src/
 ## 部署方案
 
 推荐使用以下平台部署：
+
 - GitHub Pages
 - Vercel
 - Netlify
