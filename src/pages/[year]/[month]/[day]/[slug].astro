@@ -1,6 +1,6 @@
 ---
 import MarkdownPostLayout from '../../../../layouts/MarkdownPostLayout.astro';
-import { getAllPosts, generatePostUrl } from '../../../../utils/posts';
+import { getAllPosts } from '../../../../utils/posts';
 
 export async function getStaticPaths() {
   const allPosts = getAllPosts();
@@ -28,7 +28,7 @@ export async function getStaticPaths() {
 }
 
 const { post, Content } = Astro.props;
-const { year, month, day, slug } = Astro.params;
+const { year, month, day } = Astro.params;
 
 // 验证 URL 参数是否匹配文章日期
 const postDate = new Date(post.frontmatter.pubDate);

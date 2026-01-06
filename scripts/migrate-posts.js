@@ -56,7 +56,7 @@ function generateNewPath(pubDate, slug) {
 }
 
 // 更新 layout 路径
-function updateLayoutPath(frontmatter, depth) {
+function updateLayoutPath(frontmatter) {
   const layoutPath = frontmatter.layout;
   if (layoutPath && layoutPath.startsWith('../../layouts/')) {
     // 从 ../../layouts/ 更新为 ../../../../layouts/
