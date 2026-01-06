@@ -1,36 +1,56 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogPost from '../../components/BlogPost.astro';
-import { getAllPosts, getAllTags, getPostsByTag } from '../../utils/posts';
+import { getAllPosts, getPostsByCategory, getAllCategories } from '../../utils/posts';
 
 export async function getStaticPaths() {
   const allPosts = getAllPosts();
-  const tags = getAllTags(allPosts);
+  const categories = getAllCategories(allPosts);
   
-  return tags.map(tag => ({
-    params: { tag },
+  return categories.map(category => ({
+    params: { category: encodeURIComponent(category) },
     props: { 
-      posts: getPostsByTag(allPosts, tag)
+      category,
+      posts: getPostsByCategory(allPosts, category)
     }
   }));
 }
 
-const { tag } = Astro.params;
+const { category } = Astro.params;
 const { posts } = Astro.props;
-const pageTitle = `标签: ${tag}`;
+const decodedCategory = decodeURIComponent(category);
+const pageTitle = `类别: ${decodedCategory}`;
+
+// 检查是否为子类别
+const isSubcategory = decodedCategory.includes('/');
+const categoryParts = decodedCategory.split('/');
+const parentCategory = categoryParts[0];
+const subcategoryName = categoryParts.slice(1).join('/');
 ---
 
 <BaseLayout pageTitle={pageTitle}>
-  <div class="tag-header">
+  <div class="category-header">
     <nav class="breadcrumb">
-      <a href="/tags">所有标签</a>
+      <a href="/categories">所有类别</a>
+      {isSubcategory && (
+        <>
+          <span class="separator">›</span>
+          <a href={`/categories/${encodeURIComponent(parentCategory)}`}>
+            {parentCategory}
+          </a>
+        </>
+      )}
       <span class="separator">›</span>
-      <span class="current">{tag}</span>
+      <span class="current">
+        {isSubcategory ? subcategoryName : decodedCategory}
+      </span>
     </nav>
     
-    <div class="tag-info">
-      <h1 class="tag-title">#{tag}</h1>
-      <p class="tag-description">
+    <div class="category-info">
+      <h1 class="category-title">
+        {isSubcategory ? subcategoryName : decodedCategory}
+      </h1>
+      <p class="category-description">
         共找到 {posts.length} 篇相关文章
       </p>
     </div>
@@ -52,7 +72,7 @@ const pageTitle = `标签: ${tag}`;
     ) : (
       <div class="empty-state">
         <h3>暂无文章</h3>
-        <p>该标签下还没有发布任何文章。</p>
+        <p>该类别下还没有发布任何文章。</p>
         <a href="/blog" class="back-link">浏览所有文章</a>
       </div>
     )}
@@ -60,7 +80,7 @@ const pageTitle = `标签: ${tag}`;
 </BaseLayout>
 
 <style>
-  .tag-header {
+  .category-header {
     margin-bottom: 3rem;
   }
   
@@ -92,18 +112,18 @@ const pageTitle = `标签: ${tag}`;
     font-weight: 500;
   }
   
-  .tag-info {
+  .category-info {
     text-align: center;
   }
   
-  .tag-title {
+  .category-title {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #3b82f6;
+    color: #1f2937;
     margin: 0 0 1rem 0;
   }
   
-  .tag-description {
+  .category-description {
     font-size: 1.1rem;
     color: #6b7280;
     margin: 0;
@@ -156,7 +176,7 @@ const pageTitle = `标签: ${tag}`;
   }
   
   @media (max-width: 768px) {
-    .tag-title {
+    .category-title {
       font-size: 2rem;
     }
     
@@ -182,11 +202,11 @@ const pageTitle = `标签: ${tag}`;
     color: #9ca3af;
   }
   
-  :global(html.dark) .tag-title {
-    color: #60a5fa;
+  :global(html.dark) .category-title {
+    color: #f1f5f9;
   }
   
-  :global(html.dark) .tag-description {
+  :global(html.dark) .category-description {
     color: #cbd5e1;
   }
   

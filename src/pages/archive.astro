@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllPosts, getPostsByYear, formatDate } from '../utils/posts';
+
+const pageTitle = "归档";
+const allPosts = getAllPosts();
+const postsByYear = getPostsByYear(allPosts);
+const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a));
+---
+
+<BaseLayout pageTitle={pageTitle}>
+  <div class="archive-intro">
+    <p>按时间顺序浏览所有文章，共 {allPosts.length} 篇</p>
+  </div>
+
+  <div class="archive-timeline">
+    {years.map(year => (
+      <div class="year-section">
+        <h2 class="year-title">{year}</h2>
+        <div class="posts-list">
+          {postsByYear[year].map(post => (
+            <article class="archive-post">
+              <time class="post-date">
+                {formatDate(post.frontmatter.pubDate)}
+              </time>
+              <div class="post-info">
+                <h3 class="post-title">
+                  <a href={post.url}>{post.frontmatter.title}</a>
+                </h3>
+                <p class="post-description">{post.frontmatter.description}</p>
+                {post.frontmatter.tags && (
+                  <div class="post-tags">
+                    {post.frontmatter.tags.map(tag => (
+                      <span class="tag">#{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {allPosts.length === 0 && (
+    <div class="empty-state">
+      <p>还没有发布任何文章，敬请期待！</p>
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  .archive-intro {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .archive-intro p {
+    font-size: 1.1rem;
+    color: #6b7280;
+  }
+  
+  .archive-timeline {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .year-section {
+    margin-bottom: 3rem;
+  }
+  
+  .year-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  
+  .posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .archive-post {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #f9fafb;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    transition: all 0.2s ease;
+  }
+  
+  .archive-post:hover {
+    background: #f3f4f6;
+    transform: translateX(4px);
+  }
+  
+  .post-date {
+    flex-shrink: 0;
+    width: 120px;
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+  
+  .post-info {
+    flex: 1;
+  }
+  
+  .post-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .post-title a {
+    color: #1f2937;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .post-title a:hover {
+    color: #3b82f6;
+  }
+  
+  .post-description {
+    margin: 0 0 1rem 0;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+  
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .tag {
+    font-size: 0.8rem;
+    color: #3b82f6;
+    background: #dbeafe;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #9ca3af;
+  }
+  
+  @media (max-width: 640px) {
+    .archive-post {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .post-date {
+      width: auto;
+    }
+  }
+  
+  /* Dark mode styles */
+  :global(html.dark) .archive-intro p {
+    color: #cbd5e1;
+  }
+  
+  :global(html.dark) .year-title {
+    color: #f1f5f9;
+    border-bottom-color: #374151;
+  }
+  
+  :global(html.dark) .archive-post {
+    background: #374151;
+    border-left-color: #60a5fa;
+  }
+  
+  :global(html.dark) .archive-post:hover {
+    background: #4b5563;
+  }
+  
+  :global(html.dark) .post-date {
+    color: #9ca3af;
+  }
+  
+  :global(html.dark) .post-title a {
+    color: #f1f5f9;
+  }
+  
+  :global(html.dark) .post-title a:hover {
+    color: #60a5fa;
+  }
+  
+  :global(html.dark) .post-description {
+    color: #d1d5db;
+  }
+  
+  :global(html.dark) .tag {
+    color: #60a5fa;
+    background: #1e3a8a;
+  }
+  
+  :global(html.dark) .empty-state {
+    color: #6b7280;
+  }
+</style>

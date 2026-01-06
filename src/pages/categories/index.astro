@@ -1,0 +1,358 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllPosts, getAllCategories, buildCategoryTree, getPostsByCategory } from '../../utils/posts';
+
+const pageTitle = "类别";
+const allPosts = getAllPosts();
+const allCategories = getAllCategories(allPosts);
+const categoryTree = buildCategoryTree(allCategories);
+
+// 计算每个类别的文章数量
+const categoryCounts: { [key: string]: number } = {};
+allCategories.forEach(category => {
+  categoryCounts[category] = getPostsByCategory(allPosts, category).length;
+});
+
+// 计算总文章数
+const totalPosts = allPosts.length;
+---
+
+<BaseLayout pageTitle={pageTitle}>
+  <div class="categories-intro">
+    <p>按类别浏览文章，共 {Object.keys(categoryTree).length} 个主类别，{totalPosts} 篇文章</p>
+  </div>
+
+  <div class="categories-container">
+    <div class="categories-list">
+      {Object.entries(categoryTree).map(([parentCategory, children]) => (
+        <div class="category-group">
+          <div class="category-item main-category" data-category={parentCategory}>
+            <div class="category-content">
+              <div class="category-info">
+                {children.length > 0 && (
+                  <button class="expand-btn" aria-label="展开/收起">
+                    <svg class="expand-icon" width="16" height="16" viewBox="0 0 16 16">
+                      <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                  </button>
+                )}
+                <a href={`/categories/${encodeURIComponent(parentCategory)}`} class="category-link">
+                  {parentCategory}
+                </a>
+              </div>
+              <span class="post-count">{categoryCounts[parentCategory] || 0}</span>
+            </div>
+          </div>
+          
+          {children.length > 0 && (
+            <div class="subcategories" data-parent={parentCategory}>
+              {children.map(child => (
+                <div class="category-item sub-category">
+                  <div class="category-content">
+                    <div class="category-info">
+                      <a href={`/categories/${encodeURIComponent(parentCategory + '/' + child)}`} class="category-link">
+                        {child}
+                      </a>
+                    </div>
+                    <span class="post-count">{categoryCounts[parentCategory + '/' + child] || 0}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  {Object.keys(categoryTree).length === 0 && (
+    <div class="empty-state">
+      <p>还没有任何类别，发布文章时添加类别信息吧！</p>
+    </div>
+  )}
+</BaseLayout>
+
+<script>
+  // 添加展开/收起功能
+  document.addEventListener('DOMContentLoaded', () => {
+    const expandBtns = document.querySelectorAll('.expand-btn');
+    
+    expandBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const categoryItem = btn.closest('.category-group');
+        const subcategories = categoryItem?.querySelector('.subcategories');
+        const icon = btn.querySelector('.expand-icon') as HTMLElement;
+        
+        if (subcategories && icon) {
+          const isExpanded = subcategories.classList.contains('expanded');
+          
+          if (isExpanded) {
+            subcategories.classList.remove('expanded');
+            icon.style.transform = 'rotate(0deg)';
+          } else {
+            subcategories.classList.add('expanded');
+            icon.style.transform = 'rotate(90deg)';
+          }
+        }
+      });
+    });
+    
+    // 默认展开所有分类
+    document.querySelectorAll('.subcategories').forEach(sub => {
+      sub.classList.add('expanded');
+    });
+    document.querySelectorAll('.expand-icon').forEach(icon => {
+      (icon as HTMLElement).style.transform = 'rotate(90deg)';
+    });
+  });
+</script>
+
+<style>
+  .categories-intro {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .categories-intro p {
+    font-size: 1.1rem;
+    color: #6b7280;
+  }
+  
+  .categories-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .categories-list {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+  
+  .category-group {
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .category-group:last-child {
+    border-bottom: none;
+  }
+  
+  .category-item {
+    transition: all 0.2s ease;
+  }
+  
+  .category-item:hover {
+    background: #f8fafc;
+  }
+  
+  .main-category {
+    background: #f9fafb;
+  }
+  
+  .main-category:hover {
+    background: #f1f5f9;
+  }
+  
+  .category-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+  }
+  
+  .category-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+  }
+  
+  .expand-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    color: #6b7280;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .expand-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+  }
+  
+  .expand-icon {
+    transition: transform 0.2s ease;
+  }
+  
+  .category-link {
+    color: #1f2937;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+  }
+  
+  .main-category .category-link {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  
+  .category-link:hover {
+    color: #3b82f6;
+  }
+  
+  .post-count {
+    background: #e5e7eb;
+    color: #374151;
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    min-width: 2rem;
+    text-align: center;
+  }
+  
+  .main-category .post-count {
+    background: #3b82f6;
+    color: white;
+  }
+  
+  .subcategories {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: #ffffff;
+  }
+  
+  .subcategories.expanded {
+    max-height: 1000px;
+  }
+  
+  .sub-category {
+    border-top: 1px solid #f3f4f6;
+  }
+  
+  .sub-category .category-content {
+    padding-left: 3rem;
+  }
+  
+  .sub-category .category-link {
+    color: #4b5563;
+    font-weight: 400;
+  }
+  
+  .sub-category .post-count {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #9ca3af;
+  }
+  
+  @media (max-width: 640px) {
+    .categories-container {
+      margin: 0 1rem;
+    }
+    
+    .category-content {
+      padding: 0.875rem 1rem;
+    }
+    
+    .sub-category .category-content {
+      padding-left: 2.5rem;
+    }
+    
+    .category-link {
+      font-size: 0.95rem;
+    }
+    
+    .main-category .category-link {
+      font-size: 1rem;
+    }
+  }
+  
+  /* Dark mode styles */
+  :global(html.dark) .categories-intro p {
+    color: #cbd5e1;
+  }
+  
+  :global(html.dark) .categories-list {
+    background: #374151;
+    border-color: #4b5563;
+  }
+  
+  :global(html.dark) .category-group {
+    border-bottom-color: #4b5563;
+  }
+  
+  :global(html.dark) .category-item:hover {
+    background: #4b5563;
+  }
+  
+  :global(html.dark) .main-category {
+    background: #4b5563;
+  }
+  
+  :global(html.dark) .main-category:hover {
+    background: #6b7280;
+  }
+  
+  :global(html.dark) .expand-btn {
+    color: #9ca3af;
+  }
+  
+  :global(html.dark) .expand-btn:hover {
+    background: #6b7280;
+    color: #d1d5db;
+  }
+  
+  :global(html.dark) .category-link {
+    color: #f1f5f9;
+  }
+  
+  :global(html.dark) .category-link:hover {
+    color: #60a5fa;
+  }
+  
+  :global(html.dark) .post-count {
+    background: #6b7280;
+    color: #e5e7eb;
+  }
+  
+  :global(html.dark) .main-category .post-count {
+    background: #60a5fa;
+    color: #1e293b;
+  }
+  
+  :global(html.dark) .subcategories {
+    background: #374151;
+  }
+  
+  :global(html.dark) .sub-category {
+    border-top-color: #4b5563;
+  }
+  
+  :global(html.dark) .sub-category .category-link {
+    color: #d1d5db;
+  }
+  
+  :global(html.dark) .sub-category .post-count {
+    background: #4b5563;
+    color: #9ca3af;
+  }
+  
+  :global(html.dark) .empty-state {
+    color: #6b7280;
+  }
+</style>
