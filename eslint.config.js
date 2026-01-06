@@ -38,6 +38,13 @@ export default [
   // TypeScript：只启用「安全子集」
   {
     files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
     plugins: {
       '@typescript-eslint': tseslint.plugin,
     },

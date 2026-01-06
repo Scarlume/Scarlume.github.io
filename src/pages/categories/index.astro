@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryNodeView from '../../components/CategoryNodeView';
+import * as PostUtils from '../../utils/posts';
+
+const pageTitle = "类别";
+const allPosts = PostUtils.getAllPosts();
+const categoryTree = PostUtils.buildCategoryTree(allPosts as any);
+
+// 计算每个类别的文章数量
+const categoryCounts: { [key: string]: number } = {};
+function calculateCounts(tree: any, prefix = '') {
+  Object.keys(tree).forEach(key => {
+    const fullPath = prefix ? `${prefix}/${key}` : key;
+    // @ts-ignore
+    const postsInCategory = PostUtils.getPostsByCategory(allPosts, fullPath);
+    categoryCounts[fullPath] = postsInCategory.length;
+    
+    if (tree[key].children && Object.keys(tree[key].children).length > 0) {
+      calculateCounts(tree[key].children, fullPath);
+    }
+  });
+}
+calculateCounts(categoryTree);
+---
+
+<BaseLayout pageTitle={pageTitle}>
+  <div class="categories-container">
+    <div class="categories-tree">
+      {Object.keys(categoryTree).map(categoryName => (
+        <CategoryNodeView 
+          categoryName={categoryName}
+          categoryNode={categoryTree[categoryName] as any}
+          categoryCounts={categoryCounts}
+          level={0}
+          client:load
+        />
+      ))}
+    </div>
+  </div>
+
+  {Object.keys(categoryTree).length === 0 && (
+    <div class="empty-state">
+      <p>还没有任何类别，发布文章时添加类别信息吧！</p>
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  .categories-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .categories-tree {
+    background: transparent;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6b7280;
+  }
+  
+  @media (max-width: 640px) {
+    .categories-container {
+      padding: 1rem 0.5rem;
+    }
+  }
+  
+  /* Dark mode is default, but add light mode overrides if needed */
+  :global(html:not(.dark)) .categories-tree {
+    color: #1f2937;
+  }
+</style>

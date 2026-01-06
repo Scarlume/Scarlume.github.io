@@ -1,0 +1,47 @@
+---
+import MarkdownPostLayout from '../../../../layouts/MarkdownPostLayout.astro';
+import { getAllPosts } from '../../../../utils/posts';
+
+export async function getStaticPaths() {
+  const allPosts = getAllPosts();
+  
+  return allPosts.map(post => {
+    const date = new Date(post.frontmatter.pubDate);
+    const year = date.getFullYear().toString();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const slug = post.frontmatter.slug;
+    
+    return {
+      params: { 
+        year, 
+        month, 
+        day, 
+        slug 
+      },
+      props: { 
+        post,
+        Content: post.Content
+      }
+    };
+  });
+}
+
+const { post, Content } = Astro.props;
+const { year, month, day } = Astro.params;
+
+// 验证 URL 参数是否匹配文章日期
+const postDate = new Date(post.frontmatter.pubDate);
+const expectedYear = postDate.getFullYear().toString();
+const expectedMonth = String(postDate.getMonth() + 1).padStart(2, '0');
+const expectedDay = String(postDate.getDate()).padStart(2, '0');
+
+// 如果 URL 参数与文章日期不匹配，返回 404
+if (year !== expectedYear || month !== expectedMonth || day !== expectedDay) {
+  return Astro.redirect('/404');
+}
+---
+
+<MarkdownPostLayout frontmatter={post.frontmatter}>
+  <Content />
+</MarkdownPostLayout>
