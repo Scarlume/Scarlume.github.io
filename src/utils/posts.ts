@@ -20,6 +20,14 @@ export interface Post {
   Content: any;
 }
 
+// 类别树节点接口
+export interface CategoryNode {
+  children: { [key: string]: CategoryNode };
+  posts: Post[];
+  path: string;
+  isLeaf: boolean;
+}
+
 // 获取所有文章
 export function getAllPosts(): Post[] {
   const posts = Object.values(
@@ -77,7 +85,6 @@ export function getAllTags(posts: Post[]): string[] {
 // 获取所有类别路径（扁平化）
 export function getAllCategories(posts: Post[]): string[] {
   const categoryPaths = new Set<string>();
-  
   posts.forEach(post => {
     if (post.frontmatter.categories) {
       // 生成所有可能的路径
@@ -91,29 +98,35 @@ export function getAllCategories(posts: Post[]): string[] {
   return Array.from(categoryPaths).sort();
 }
 
-// 构建类别树结构
-export function buildCategoryTree(categoryPaths: string[]): { [key: string]: string[] } {
-  const tree: { [key: string]: string[] } = {};
-  
-  categoryPaths.forEach(path => {
-    const parts = path.split('/');
-    const parent = parts[0];
-    
-    if (!tree[parent]) {
-      tree[parent] = [];
+
+
+// 构建完整的类别树结构，包含文章信息
+export function buildCategoryTree(posts: Post[]): { [key: string]: CategoryNode } {
+  const tree: { [key: string]: CategoryNode } = {};
+  posts.forEach(post => {
+    if (post.frontmatter.categories && post.frontmatter.categories.length > 0) {
+      let currentLevel = tree;
+      
+      // 遍历每个层级
+      post.frontmatter.categories.forEach((category, index) => {
+        if (!currentLevel[category]) {
+          currentLevel[category] = {
+            children: {},
+            posts: [],
+            path: post.frontmatter.categories!.slice(0, index + 1).join('/'),
+            isLeaf: false
+          };
+        }
+        
+        // 如果是最后一级，添加文章
+        if (index === post.frontmatter.categories!.length - 1) {
+          currentLevel[category].posts.push(post);
+          currentLevel[category].isLeaf = true;
+        }
+        
+        currentLevel = currentLevel[category].children;
+      });
     }
-    
-    if (parts.length > 1) {
-      const child = parts.slice(1).join('/');
-      if (!tree[parent].includes(child)) {
-        tree[parent].push(child);
-      }
-    }
-  });
-  
-  // 对子类别进行排序
-  Object.keys(tree).forEach(key => {
-    tree[key].sort();
   });
   
   return tree;
